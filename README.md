@@ -13,7 +13,10 @@ Install globally via npm:
 ## Usage
 Initialize cursor-companion in your project:
 
-    cursor-companion init
+
+### Installing Packs
+You can install additional workflow packs using: `cursor-companion packs install -n <pack-name>`
+
 
 You can also initialize with specific packs:
 
