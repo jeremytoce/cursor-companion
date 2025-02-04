@@ -1,0 +1,35 @@
+{
+  "name": "cursor-companion",
+  "version": "0.1.0",
+  "description": "CLI tool for Cursor workflow templates",
+  "main": "bin/cursor-companion.js",
+  "bin": {
+    "cursor-companion": "./bin/cursor-companion.js"
+  },
+  "scripts": {
+    "test": "jest"
+  },
+  "keywords": [
+    "cursor",
+    "templates",
+    "workflow"
+  ],
+  "author": "Jeremy Toce",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jeremytoce/cursor-companion.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jeremytoce/cursor-companion/issues"
+  },
+  "homepage": "https://github.com/jeremytoce/cursor-companion#readme",
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "commander": "^8.3.0",
+    "fs-extra": "^10.1.0"
+  },
+  "devDependencies": {
+    "jest": "^27.0.0"
+  }
+}

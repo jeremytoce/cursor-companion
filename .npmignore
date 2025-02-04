@@ -1,0 +1,6 @@
+node_modules/
+.git/
+.gitignore
+*.test.js
+.DS_Store 
+cursor-companion/
