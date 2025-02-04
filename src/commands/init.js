@@ -1,44 +1,56 @@
+const fs = require('fs-extra');
 const path = require('path');
+const chalk = require('chalk');
+const { copyTemplates } = require('../utils/copy');
 const logger = require('../utils/logger');
-const fileHandler = require('../utils/file-handler');
-
-const TEMPLATE_DIR = path.join(__dirname, '../templates');
 
 async function init() {
-  const projectDir = process.cwd();
-  const targetDir = path.join(projectDir, 'cursor-companion');
+  logger.info('Initializing cursor-companion...');
 
   try {
-    // Validate project directory
-    await fileHandler.validateProjectDir(projectDir);
-
-    // Check if already initialized
-    const isInitialized = await fileHandler.isInitialized(projectDir);
-    if (isInitialized) {
-      logger.warning('cursor-companion is already initialized in this project');
-      logger.info('To reinstall, please remove the cursor-companion directory first');
-      return;
-    }
-
     // Create cursor-companion directory
-    logger.info('Initializing cursor-companion...');
-    await fileHandler.ensureDir(targetDir);
-
-    // Copy template files
-    await fileHandler.copyTemplates(TEMPLATE_DIR, targetDir);
-
-    logger.success('Successfully initialized cursor-companion!');
-    logger.info('Templates are now available in the cursor-companion directory');
-    logger.info('Run `cursor-companion --help` to see available commands');
-
-  } catch (error) {
-    if (error.code === 'EACCES') {
-      logger.error('Permission denied. Please check directory permissions');
-    } else {
-      logger.error(`Failed to initialize cursor-companion: ${error.message}`);
+    const targetDir = path.join(process.cwd(), 'cursor-companion');
+    
+    // Check if directory already exists
+    if (await fs.pathExists(targetDir)) {
+      logger.warning('cursor-companion directory already exists');
+      const overwrite = await askOverwrite();
+      if (!overwrite) {
+        logger.info('Installation cancelled');
+        return;
+      }
     }
-    throw error;
+
+    // Copy templates
+    await copyTemplates(targetDir);
+
+    // Create features directory
+    const featuresDir = path.join(targetDir, 'features');
+    await fs.ensureDir(featuresDir);
+
+    logger.success('Successfully installed Cursor workflow templates!');
+    console.log('\nTemplates installed in:', chalk.blue(targetDir));
+    console.log('\nDirectory structure created:');
+    console.log(chalk.blue('cursor-companion/'));
+    console.log(chalk.blue('├── templates/'));
+    console.log(chalk.blue('└── features/'));
+    console.log('\nUse', chalk.yellow('cursor-companion --help'), 'for available commands');
+  } catch (error) {
+    logger.error('Failed to initialize cursor-companion: ' + error.message);
+    logger.error(error.message);
+    process.exit(1);
   }
+}
+
+async function askOverwrite() {
+  const { prompt } = require('enquirer');
+  const response = await prompt({
+    type: 'confirm',
+    name: 'overwrite',
+    message: 'Directory already exists. Do you want to overwrite?',
+    initial: false
+  });
+  return response.overwrite;
 }
 
 module.exports = init; 
