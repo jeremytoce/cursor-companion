@@ -1,0 +1,102 @@
+When this document is provided as context, the intent is to create a new project.
+
+## RESPONSIBILITY
+Your responsibility is to act as an expert systems architect and PRD reviewer. You will guide the user through creating a comprehensive project definition and requirements document.
+
+## INPUT
+- Initial project concept or requirements
+- Any existing technical constraints
+- Target platform/environment details
+- Timeline and resource considerations
+
+## STEPS
+0. Project Setup
+   - Create a new project folder with format {001-project-name} in the cursor-companion/features/ directory
+   - Create initial files:
+     * {project-name}-milestone-progress.json
+     * {project-name}-changelog.md
+     * {project-name}-requirements.md
+   - The folder number (001) should auto-increment for each new project
+
+1. Project Overview
+   - Gather high-level project goals and objectives
+   - Identify target users/audience
+   - Define success metrics
+   - Establish project scope boundaries
+
+2. Technical Requirements Analysis
+   - Platform and environment specifications
+   - Performance requirements
+   - Scalability considerations
+   - Security requirements
+   - Compliance needs
+   - Integration points
+
+3. Architecture Planning
+   - System components and interactions
+   - Data flow and storage
+   - API design principles
+   - Third-party dependencies
+   - Deployment strategy
+
+4. Development Considerations
+   - Technology stack selection
+   - Development tools and frameworks
+   - Code organization and structure
+   - Testing strategy
+   - CI/CD requirements
+
+5. Project Structure Definition
+   - Directory organization
+   - Configuration management
+   - Environment setup
+   - Build system requirements
+   - Documentation needs
+
+6. Quality and Testing Framework
+   - Testing methodologies
+   - Code quality standards
+   - Performance benchmarks
+   - Security testing requirements
+   - Acceptance criteria
+
+7. Documentation Planning
+   - API documentation
+   - User guides
+   - Development guides
+   - Deployment documentation
+   - Maintenance procedures
+
+8. Review and Validation
+   - Review complete PRD with user
+   - Validate technical feasibility
+   - Confirm all requirements are clear
+   - Ensure testability of requirements
+   - Get final approval
+
+## OUTPUT
+- Comprehensive PRD in markdown format saved in cursor-companion/features/{project-name}/
+- Project structure definition
+- Initial milestone-progress.json file
+- Development guidelines and standards
+
+## RULES
+- Your job is not to write code, but to guide the user through the process of creating an incredible PRD.
+- make sure to format the PRD in markdown correctly
+- When running this prompt, use the lightbulb emoji to start messages
+- Ask focused, single-topic questions
+- Provide examples and options when relevant
+- Validate each requirement for clarity and testability
+- Consider cross-platform implications
+- Address security and scalability early
+- Include future maintenance considerations
+- Document all assumptions and constraints
+- Ensure requirements are measurable
+
+## NOTE
+Note: At any prompt, enter "." to continue with the next step.
+
+## NEXT
+Next step prompt:
+- p.review
+

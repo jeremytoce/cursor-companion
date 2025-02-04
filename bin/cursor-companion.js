@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
 const { program } = require('commander');
-const init = require('../src/commands/init');
-const logger = require('../src/utils/logger');
 const pkg = require('../package.json');
+const initCommands = require('../src/commands/init');
+const PackCommands = require('../src/commands/packs');
 
 program
   .version(pkg.version)
@@ -11,14 +11,15 @@ program
 
 program
   .command('init')
-  .description('Initialize cursor-companion templates in your project')
-  .action(async () => {
-    try {
-      await init();
-    } catch (error) {
-      logger.error(error.message);
-      process.exit(1);
-    }
+  .description('Initialize cursor-companion configuration')
+  .action(initCommands);
+
+program
+  .command('packs <action>')
+  .description('Manage workflow packs')
+  .option('-n, --name <name>', 'Pack name for install/info commands')
+  .action((action, options) => {
+    PackCommands.handleCommand(action, options, process.cwd());
   });
 
 program.parse(process.argv); 

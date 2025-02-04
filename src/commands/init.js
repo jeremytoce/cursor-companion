@@ -1,63 +1,59 @@
 const fs = require('fs-extra');
 const path = require('path');
 const chalk = require('chalk');
-const fileHandler = require('../utils/file-handler');
 const logger = require('../utils/logger');
+const PackUtils = require('../utils/packUtils');
+const fileUtils = require('../utils/fileUtils');
 
 async function init() {
-  logger.info('Installing Cursor workflow templates...');
+  const projectRoot = process.cwd();
+  const cursorCompanionDir = path.join(projectRoot, 'cursor-companion');
+
+  logger.info('Initializing cursor-companion...');
 
   try {
-    // Create cursor-companion directory
-    const targetDir = path.join(process.cwd(), 'cursor-companion');
-    
-    // Check if directory already exists
-    if (await fileHandler.isInitialized(process.cwd())) {
-      logger.warning('cursor-companion directory already exists');
-      const overwrite = await askOverwrite();
+    // Validate project directory
+    await fileUtils.validateProjectDir(projectRoot);
+
+    // Check if already initialized
+    if (await fileUtils.isInitialized(projectRoot)) {
+      const { prompt } = require('enquirer');
+      const { overwrite } = await prompt({
+        type: 'confirm',
+        name: 'overwrite',
+        message: 'cursor-companion already exists. Overwrite?',
+        initial: false
+      });
+
       if (!overwrite) {
         logger.info('Installation cancelled');
         return;
       }
-      // If overwriting, remove existing directory
-      await fs.remove(targetDir);
+      await fs.remove(cursorCompanionDir);
       logger.info('Removed existing cursor-companion directory');
     }
 
-    // Copy templates
-    await fileHandler.copyTemplates(targetDir);
+    // Create directory structure
+    await fs.ensureDir(path.join(cursorCompanionDir, 'workflow-packs'));
 
-    // Create features directory
-    const featuresDir = path.join(targetDir, 'features');
-    await fileHandler.ensureDir(featuresDir);
+    // Install base pack
+    logger.info('Installing base pack...');
+    await PackUtils.installPack('base', projectRoot);
+    logger.success('Base pack installed successfully');
 
-    logger.success('Successfully installed Cursor workflow templates!');
-    console.log('\nTemplates installed in:', chalk.blue(targetDir));
+    logger.success('\nInitialization complete!');
     console.log('\nDirectory structure created:');
     console.log(chalk.blue('cursor-companion/'));
-    console.log(chalk.blue('├── templates/'));
-    console.log(chalk.blue('└── features/'));
-    console.log('\nUse', chalk.yellow('cursor-companion --help'), 'for available commands');
+    console.log(chalk.blue('└── workflow-packs/'));
+    console.log(chalk.blue('    └── base/'));
+    
+    console.log('Use', chalk.yellow('cursor-companion packs list'), 'to see installed packs');
+    console.log('Use', chalk.yellow('cursor-companion packs install -n <pack-name>'), 'to install additional packs');
+    console.log('Use', chalk.yellow('cursor-companion --help'), 'for available commands');
   } catch (error) {
-    logger.error('Failed to install templates');
+    logger.error('Failed to initialize cursor-companion');
     logger.error(error.message);
     process.exit(1);
-  }
-}
-
-async function askOverwrite() {
-  try {
-    const { prompt } = require('enquirer');
-    const response = await prompt({
-      type: 'confirm',
-      name: 'overwrite',
-      message: 'Directory already exists. Do you want to overwrite?',
-      initial: false
-    });
-    return response.overwrite;
-  } catch (error) {
-    logger.error('Failed to get user input');
-    throw error;
   }
 }
 

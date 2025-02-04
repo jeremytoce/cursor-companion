@@ -4,3 +4,7 @@ node_modules/
 *.test.js
 .DS_Store 
 cursor-companion/
+.npmrc
+.github
+.gitguardian.yaml
+.pre-commit-config.yaml
