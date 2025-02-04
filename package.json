@@ -1,6 +1,6 @@
 {
   "name": "cursor-companion",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "CLI tool for Cursor workflow templates",
   "main": "bin/cursor-companion.js",
   "bin": {
