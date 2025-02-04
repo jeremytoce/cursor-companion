@@ -1,0 +1,9 @@
+{
+  "name": "security-audit",
+  "version": "1.0.0",
+  "author": "Jeremy Toce",
+  "description": "Security audit tools for cursor-companion",
+  "templates": [
+    "p.security-audit"
+  ]
+} 

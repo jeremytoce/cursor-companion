@@ -1,0 +1,9 @@
+{
+  "name": "code-coverage",
+  "version": "1.0.0",
+  "author": "Jeremy Toce",
+  "description": "Code coverage analysis tools for cursor-companion",
+  "templates": [
+    "p.code-coverage"
+  ]
+} 
