@@ -11,7 +11,13 @@ const logger = {
         console.log(chalk.yellow('⚠'), message);
     },
     error: (message) => {
-        console.log(chalk.red('✖'), message);
+        // Log errors in red and make them more visible
+        console.error(chalk.red('✖'), chalk.red(message));
+    },
+    debug: (message) => {
+        if (process.env.DEBUG) {
+            console.log(chalk.gray('🔍'), message);
+        }
     }
 };
 

@@ -1,10 +1,18 @@
+/**
+ * File handling utilities for cursor-companion
+ * @module fileHandler
+ */
+
 const fs = require('fs-extra');
 const path = require('path');
 const logger = require('./logger');
 
 const fileHandler = {
   /**
-   * Check if directory exists, create if it doesn't
+   * Ensures a directory exists, creates it if it doesn't
+   * @param {string} dirPath - Path to the directory
+   * @returns {Promise<boolean>} True if successful
+   * @throws {Error} If directory creation fails
    */
   ensureDir: async (dirPath) => {
     try {
@@ -17,31 +25,67 @@ const fileHandler = {
   },
 
   /**
-   * Copy template files to destination
+   * Copies template files to the target directory
+   * @param {string} targetDir - Destination directory for templates
+   * @returns {Promise<boolean>} True if successful, false if no templates found
+   * @throws {Error} If template copying fails
    */
-  copyTemplates: async (sourcePath, destPath) => {
-    if (!await fs.pathExists(sourcePath)) {
-      logger.error(`Template directory not found: ${sourcePath}`);
+  copyTemplates: async (targetDir) => {
+    // Get the templates directory path
+    const templatesDir = path.join(__dirname, '../../templates');
+    
+    if (!await fs.pathExists(templatesDir)) {
+      logger.error(`Template directory not found: ${templatesDir}`);
       throw new Error('Template directory not found');
     }
 
-    const spinner = logger.startSpinner('Copying template files...');
     try {
-      await fs.copy(sourcePath, destPath, {
-        overwrite: false,
-        errorOnExist: false,
-      });
-      logger.stopSpinner(spinner);
+      // Ensure the target directory exists
+      await fs.ensureDir(targetDir);
+      
+      // Create templates subdirectory
+      const targetTemplatesDir = path.join(targetDir, 'templates');
+      await fs.ensureDir(targetTemplatesDir);
+
+      // Copy template files
+      const templateFiles = await fs.readdir(templatesDir);
+      
+      if (templateFiles.length === 0) {
+        logger.warning('No template files found to copy');
+        return false;
+      }
+
+      for (const file of templateFiles) {
+        const sourcePath = path.join(templatesDir, file);
+        const targetPath = path.join(targetTemplatesDir, file);
+        
+        // Skip if not a file
+        const stats = await fs.stat(sourcePath);
+        if (!stats.isFile()) {
+          logger.debug(`Skipping non-file: ${file}`);
+          continue;
+        }
+        
+        await fs.copy(sourcePath, targetPath, {
+          overwrite: false,
+          errorOnExist: false,
+        });
+        logger.debug(`Copied template: ${file}`);
+      }
+      
+      logger.success('Successfully copied template files');
       return true;
     } catch (error) {
-      logger.stopSpinner(spinner);
       logger.error(`Failed to copy templates: ${error.message}`);
       throw error;
     }
   },
 
   /**
-   * Check if cursor-companion is already initialized
+   * Checks if cursor-companion is already initialized in the project
+   * @param {string} projectPath - Path to the project directory
+   * @returns {Promise<boolean>} True if initialized
+   * @throws {Error} If check fails
    */
   isInitialized: async (projectPath) => {
     try {
@@ -53,7 +97,10 @@ const fileHandler = {
   },
 
   /**
-   * Validate project directory
+   * Validates that the project directory exists and is writable
+   * @param {string} projectPath - Path to validate
+   * @returns {Promise<boolean>} True if valid
+   * @throws {Error} If directory is invalid or not writable
    */
   validateProjectDir: async (projectPath) => {
     try {
