@@ -4,7 +4,7 @@
   "description": "CLI tool for Cursor workflow templates",
   "main": "bin/cursor-companion.js",
   "bin": {
-    "cursor-companion": "./bin/cursor-companion.js"
+    "cursor-companion": "bin/cursor-companion.js"
   },
   "scripts": {
     "test": "jest"
