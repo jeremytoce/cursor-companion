@@ -8,6 +8,28 @@ Install globally via npm:
 
     npm install -g cursor-companion
 
+## Workflow Packs
+Cursor Companion uses a pack-based system to organize workflows. Each pack contains a set of specialized templates for different development scenarios.
+
+### Base Pack
+The base pack is installed by default and includes essential workflows for project initialization, debugging, and feature development. It mimics the product development lifecycle.
+
+### Installing Packs
+You can install additional workflow packs using:
+    cursor-companion packs install -n <pack-name>
+
+### Managing Packs
+- List installed packs: `cursor-companion packs list`
+- View pack details: `cursor-companion packs info -n <pack-name>`
+
+### Project Structure
+When initialized, cursor-companion creates the following structure:
+
+    cursor-companion/
+    └── workflow-packs/
+        └── base/         # Core workflows (installed by default)
+        └── [other-packs] # Additional installed packs
+
 ## Workflows
 Workflows are a way to kick off a series of guided prompts in Cursor. Each workflow represents a different stage of development,
 which are triggered by typing `@p.` followed by the workflow name. Through my experimentation, I've found that this is a way to 
@@ -40,6 +62,10 @@ The current logical flows are as follows:
 Initialize cursor-companion in your project:
 
     cursor-companion init
+
+You can also initialize with specific packs:
+
+    cursor-companion init --packs="pack1,pack2"
 
 Then, use the following commands within Cursor to kick off a workflow:
 
@@ -86,9 +112,11 @@ Then, use the following commands within Cursor to kick off a workflow:
 
 ## Features
 
+- Pack-based workflow management
 - Easy template installation
 - Project initialization
 - Template management
+- Customizable development workflows
 
 ## Commands
 
@@ -96,6 +124,13 @@ Then, use the following commands within Cursor to kick off a workflow:
 Initializes cursor-companion in your project directory:
 
     cursor-companion init
+
+### packs
+Manage workflow packs:
+
+    cursor-companion packs list           # List installed packs
+    cursor-companion packs install -n <pack-name>  # Install a pack
+    cursor-companion packs info -n <pack-name>     # Show pack information
 
 ### --help
 Shows available commands and usage:
@@ -107,18 +142,6 @@ Shows the current version:
 
     cursor-companion --version
 
-## Error Messages
-
-If you encounter any errors, the CLI will provide clear error messages:
-
-Already initialized:
-
-    warning cursor-companion is already initialized in this project
-    info To reinstall, please remove the cursor-companion directory first
-
-Permission denied:
-
-    error Permission denied. Please check directory permissions
 
 ## License
 
