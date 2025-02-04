@@ -15,8 +15,7 @@ Cursor Companion uses a pack-based system to organize workflows. Each pack conta
 The base pack is installed by default and includes essential workflows for project initialization, debugging, and feature development. It mimics the product development lifecycle.
 
 ### Installing Packs
-You can install additional workflow packs using:
-    cursor-companion packs install -n <pack-name>
+You can install additional workflow packs using: `cursor-companion packs install -n <pack-name>`
 
 ### Managing Packs
 - List installed packs: `cursor-companion packs list`
