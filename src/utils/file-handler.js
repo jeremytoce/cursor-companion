@@ -32,7 +32,7 @@ const fileHandler = {
    */
   copyTemplates: async (targetDir) => {
     // Get the templates directory path
-    const templatesDir = path.join(__dirname, '../../templates');
+    const templatesDir = path.join(__dirname, '../..', 'templates');
     
     if (!await fs.pathExists(templatesDir)) {
       logger.error(`Template directory not found: ${templatesDir}`);
