@@ -1,6 +1,10 @@
 {
   "name": "cursor-companion",
-  "version": "0.1.1",
+  "version": "0.1.2",
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
   "description": "CLI tool for Cursor workflow templates",
   "main": "bin/cursor-companion.js",
   "bin": {
@@ -27,7 +31,9 @@
   "dependencies": {
     "chalk": "^4.1.2",
     "commander": "^8.3.0",
-    "fs-extra": "^10.1.0"
+    "fs-extra": "^10.1.0",
+    "ora": "^5.4.1",
+    "enquirer": "^2.3.6"
   },
   "devDependencies": {
     "jest": "^27.0.0"
