@@ -2,13 +2,14 @@
   "name": "cursor-companion",
   "version": "0.1.8",
   "private": false,
+  "type": "module",
   "publishConfig": {
     "access": "public"
   },
   "description": "A CLI tool for managing cursor workflows",
-  "main": "bin/cursor-companion.js",
+  "main": "bin/cursor-companion.mjs",
   "bin": {
-    "cursor-companion": "./bin/cursor-companion.js"
+    "cursor-companion": "./bin/cursor-companion.mjs"
   },
   "scripts": {
     "test": "jest"

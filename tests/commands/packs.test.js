@@ -1,13 +1,10 @@
-const fs = require('fs-extra');
-const path = require('path');
-const PackCommands = require('../../src/commands/packs');
-const PackUtils = require('../../src/utils/packUtils');
-const fileUtils = require('../../src/utils/fileUtils');
-const logger = require('../../src/utils/logger');
+import PackCommands from '../../src/commands/packs.mjs';
+import PackUtils from '../../src/utils/packUtils.mjs';
+import fileUtils from '../../src/utils/fileUtils.mjs';
 
-jest.mock('../../src/utils/fileUtils');
-jest.mock('../../src/utils/packUtils');
-jest.mock('../../src/utils/logger');
+jest.mock('../../src/utils/fileUtils.mjs');
+jest.mock('../../src/utils/packUtils.mjs');
+jest.mock('../../src/utils/logger.mjs');
 jest.mock('fs-extra');
 
 describe('PackCommands', () => {

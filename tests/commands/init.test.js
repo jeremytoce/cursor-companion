@@ -1,16 +1,16 @@
-const fs = require('fs-extra');
-const path = require('path');
-const init = require('../../src/commands/init');
-const PackUtils = require('../../src/utils/packUtils');
-const fileUtils = require('../../src/utils/fileUtils');
-const logger = require('../../src/utils/logger');
-const enquirer = require('enquirer');
+import fs from 'fs-extra';
+import path from 'path';
+import init from '../../src/commands/init.mjs';
+import PackUtils from '../../src/utils/packUtils.mjs';
+import fileUtils from '../../src/utils/fileUtils.mjs';
+import logger from '../../src/utils/logger.mjs';
+import enquirer from 'enquirer';
 
 jest.mock('fs-extra');
 jest.mock('path');
-jest.mock('../../src/utils/packUtils');
-jest.mock('../../src/utils/fileUtils');
-jest.mock('../../src/utils/logger');
+jest.mock('../../src/utils/packUtils.mjs');
+jest.mock('../../src/utils/fileUtils.mjs');
+jest.mock('../../src/utils/logger.mjs');
 jest.mock('enquirer');
 
 describe('init command', () => {
@@ -72,4 +72,4 @@ describe('init command', () => {
     expect(logger.error).toHaveBeenCalledWith('Failed to initialize cursor-companion');
     expect(mockExit).toHaveBeenCalledWith(1);
   });
-}); 
+});

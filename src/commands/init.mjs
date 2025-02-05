@@ -1,11 +1,14 @@
-const fs = require('fs-extra');
-const path = require('path');
-const chalk = require('chalk');
-const logger = require('../utils/logger');
-const PackUtils = require('../utils/packUtils');
-const fileUtils = require('../utils/fileUtils');
+import fs from 'fs-extra';
+import path from 'path';
+import chalk from 'chalk';
+import logger from '../utils/logger.mjs';
+import PackUtils from '../utils/packUtils.mjs';
+import fileUtils from '../utils/fileUtils.mjs';
+import pkg from 'enquirer';
 
-async function init() {
+const { prompt } = pkg;
+
+export default async function init() {
   const projectRoot = process.cwd();
   const cursorCompanionDir = path.join(projectRoot, 'cursor-companion');
 
@@ -17,7 +20,6 @@ async function init() {
 
     // Check if already initialized
     if (await fileUtils.isInitialized(projectRoot)) {
-      const { prompt } = require('enquirer');
       const { overwrite } = await prompt({
         type: 'confirm',
         name: 'overwrite',
@@ -56,5 +58,3 @@ async function init() {
     process.exit(1);
   }
 }
-
-module.exports = init; 

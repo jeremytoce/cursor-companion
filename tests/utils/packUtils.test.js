@@ -1,6 +1,5 @@
-const fs = require('fs-extra');
-const path = require('path');
-const PackUtils = require('../../src/utils/packUtils');
+import fs from 'fs-extra';
+import PackUtils from '../../src/utils/packUtils.mjs';
 
 jest.mock('fs-extra');
 

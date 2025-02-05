@@ -1,9 +1,9 @@
-const fs = require('fs-extra');
-const path = require('path');
-const logger = require('./logger');
+import fs from 'fs-extra';
+import path from 'path';
+import logger from './logger.mjs';
 
-class PackUtils {
-  static PACKAGE_ROOT = path.join(__dirname, '..', '..');
+export default class PackUtils {
+  static PACKAGE_ROOT = new URL('../../', import.meta.url).pathname;
   static PACKS_DIR = 'cursor-companion/workflow-packs';
 
   /**
@@ -95,5 +95,3 @@ class PackUtils {
     return results;
   }
 }
-
-module.exports = PackUtils; 

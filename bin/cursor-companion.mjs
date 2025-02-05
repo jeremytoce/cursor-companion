@@ -1,12 +1,11 @@
 #!/usr/bin/env node
-
-const { program } = require('commander');
-const pkg = require('../package.json');
-const initCommands = require('../src/commands/init');
-const PackCommands = require('../src/commands/packs');
+import { program } from 'commander'
+import initCommands from '../src/commands/init.mjs'
+import PackCommands from '../src/commands/packs.mjs'
+import { version } from '../src/version.mjs'
 
 program
-  .version(pkg.version)
+  .version(version)
   .description('Cursor Companion CLI - Template Management Tool');
 
 program
@@ -22,4 +21,4 @@ program
     PackCommands.handleCommand(action, options, process.cwd());
   });
 
-program.parse(process.argv); 
+program.parse(process.argv);
