@@ -40,7 +40,7 @@ const fileUtils = {
       logger.error(`Invalid project directory: ${error.message}`);
       throw error;
     }
-  }
+  },
 };
 
 export default fileUtils;

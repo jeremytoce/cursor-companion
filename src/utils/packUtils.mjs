@@ -33,12 +33,10 @@ export default class PackUtils {
     if (!fs.existsSync(packsDir)) {
       return [];
     }
-    return fs.readdirSync(packsDir)
-      .filter(item => {
-        const packPath = path.join(packsDir, item);
-        return fs.statSync(packPath).isDirectory() && 
-               fs.existsSync(path.join(packPath, 'pack.json'));
-      });
+    return fs.readdirSync(packsDir).filter((item) => {
+      const packPath = path.join(packsDir, item);
+      return fs.statSync(packPath).isDirectory() && fs.existsSync(path.join(packPath, 'pack.json'));
+    });
   }
 
   /**
@@ -47,7 +45,7 @@ export default class PackUtils {
   static async installPack(packName, projectRoot = process.cwd()) {
     const sourcePath = this.getSourcePath(packName);
     const destPath = path.join(projectRoot, this.PACKS_DIR, packName);
-    
+
     // Validate source pack exists
     if (!fs.existsSync(sourcePath)) {
       throw new Error(`Pack ${packName} not found in ${sourcePath}`);
@@ -61,14 +59,12 @@ export default class PackUtils {
 
     try {
       // Read metadata from source pack
-      const sourceMetadata = JSON.parse(
-        fs.readFileSync(packJsonPath, 'utf8')
-      );
+      const sourceMetadata = JSON.parse(fs.readFileSync(packJsonPath, 'utf8'));
       logger.info(`Installing ${packName} v${sourceMetadata.version}...`);
 
       // Create destination directory if it doesn't exist
       await fs.ensureDir(path.dirname(destPath));
-      
+
       // Copy pack files
       await fs.copy(sourcePath, destPath);
 

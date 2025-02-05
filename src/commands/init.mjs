@@ -24,7 +24,7 @@ export default async function init() {
         type: 'confirm',
         name: 'overwrite',
         message: 'cursor-companion already exists. Overwrite?',
-        initial: false
+        initial: false,
       });
 
       if (!overwrite) {
@@ -48,9 +48,13 @@ export default async function init() {
     console.log(chalk.blue('cursor-companion/'));
     console.log(chalk.blue('└── workflow-packs/'));
     console.log(chalk.blue('    └── base/'));
-    
+
     console.log('Use', chalk.yellow('cursor-companion packs list'), 'to see installed packs');
-    console.log('Use', chalk.yellow('cursor-companion packs install -n <pack-name>'), 'to install additional packs');
+    console.log(
+      'Use',
+      chalk.yellow('cursor-companion packs install -n <pack-name>'),
+      'to install additional packs',
+    );
     console.log('Use', chalk.yellow('cursor-companion --help'), 'for available commands');
   } catch (error) {
     logger.error('Failed to initialize cursor-companion');

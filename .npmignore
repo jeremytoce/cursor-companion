@@ -1,10 +1,15 @@
 node_modules/
 .git/
 .gitignore
-*.test.js
+*.test.mjs
 .DS_Store 
 cursor-companion/
 .npmrc
 .github
 .gitguardian.yaml
 .pre-commit-config.yaml
+.husky/
+.prettierrc.json
+.prettierrc
+.prettierignore
+.prettierignore
