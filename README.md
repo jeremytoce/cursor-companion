@@ -6,7 +6,9 @@ An experimental workflow manager for prompt-based development in Cursor. At the 
 
 Install globally via npm:
 
-    npm install -g cursor-companion
+```bash
+npm install -g cursor-companion
+```
 
 ## Usage
 
@@ -18,27 +20,39 @@ You can install additional workflow packs using: `cursor-companion packs install
 
 You can also initialize with specific packs:
 
-    cursor-companion init --packs="pack1,pack2"
+```bash
+cursor-companion init --packs="pack1,pack2"
+```
 
 Show available commands and usage:
 
-    cursor-companion --help
+```bash
+cursor-companion --help
+```
 
 List installed packs:
 
-    cursor-companion packs list
+```bash
+cursor-companion packs list
+```
 
 Install a specified pack:
 
-    cursor-companion packs install -n <pack-name>
+```bash
+cursor-companion packs install -n <pack-name>
+```
 
 Show pack information:
 
-    cursor-companion packs info -n <pack-name>
+```bash
+cursor-companion packs info -n <pack-name>
+```
 
 Shows the current version:
 
-    cursor-companion --version
+```bash
+cursor-companion --version
+```
 
 For detailed information about available workflows in each pack, see the README.md in the respective pack's directory under `workflow-packs/`.
 
@@ -46,10 +60,12 @@ For detailed information about available workflows in each pack, see the README.
 
 When initialized, cursor-companion creates the following structure:
 
-    cursor-companion/
-    └── workflow-packs/
-        └── base/         # Core workflows (installed by default)
-        └── [other-packs] # Additional installed packs
+```text
+cursor-companion/
+└── workflow-packs/
+    └── base/         # Core workflows (installed by default)
+    └── [other-packs] # Additional installed packs
+```
 
 ## Workflow Packs
 
