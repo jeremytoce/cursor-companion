@@ -1,24 +1,29 @@
 import chalk from 'chalk';
 
-const logger = {
-  info: (message) => {
+class Logger {
+  public info(message: string): void {
     console.log(chalk.blue('ℹ'), message);
-  },
-  success: (message) => {
+  }
+
+  public success(message: string): void {
     console.log(chalk.green('✓'), message);
-  },
-  warning: (message) => {
+  }
+
+  public warning(message: string): void {
     console.log(chalk.yellow('⚠'), message);
-  },
-  error: (message) => {
+  }
+
+  public error(message: string): void {
     // Log errors in red and make them more visible
     console.error(chalk.red('✖'), chalk.red(message));
-  },
-  debug: (message) => {
+  }
+
+  public debug(message: string): void {
     if (process.env.DEBUG) {
       console.log(chalk.gray('🔍'), message);
     }
-  },
-};
+  }
+}
 
-export default logger;
+// Export a singleton instance
+export default new Logger();

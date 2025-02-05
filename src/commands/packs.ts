@@ -1,9 +1,11 @@
-import PackUtils from '../utils/packUtils.mjs';
-import fileUtils from '../utils/fileUtils.mjs';
-import logger from '../utils/logger.mjs';
+import PackUtils from '@/utils/packUtils';
+import fileUtils from '@/utils/fileUtils';
+import logger from '@/utils/logger';
 
 export default class PackCommands {
-  constructor(projectRoot) {
+  private projectRoot: string;
+
+  constructor(projectRoot: string) {
     this.projectRoot = projectRoot;
   }
 
@@ -11,13 +13,17 @@ export default class PackCommands {
    * Install a workflow pack
    * @param {string} packName - Name of the pack to install
    */
-  async install(packName) {
+  async install(packName: string): Promise<void> {
     try {
       await fileUtils.validateProjectDir(this.projectRoot);
       await PackUtils.installPack(packName, this.projectRoot);
       logger.success(`Successfully installed ${packName} workflow pack`);
     } catch (error) {
-      logger.error(`Failed to install ${packName}: ${error.message}`);
+      if (error instanceof Error) {
+        logger.error(`Failed to install ${packName}: ${error.message}`);
+      } else {
+        logger.error(`Failed to install ${packName}: Unknown error`);
+      }
       process.exit(1);
     }
   }
@@ -25,7 +31,7 @@ export default class PackCommands {
   /**
    * List installed packs
    */
-  async list() {
+  async list(): Promise<void> {
     try {
       await fileUtils.validateProjectDir(this.projectRoot);
       const packs = PackUtils.listInstalledPacks(this.projectRoot);
@@ -36,7 +42,11 @@ export default class PackCommands {
         logger.info(`- ${pack} (v${metadata.version})`);
       }
     } catch (error) {
-      logger.error(`Failed to list packs: ${error.message}`);
+      if (error instanceof Error) {
+        logger.error(`Failed to list packs: ${error.message}`);
+      } else {
+        logger.error('Failed to list packs: Unknown error');
+      }
       process.exit(1);
     }
   }
@@ -45,7 +55,7 @@ export default class PackCommands {
    * Show pack info
    * @param {string} packName - Name of the pack to show info for
    */
-  async info(packName) {
+  async info(packName: string): Promise<void> {
     try {
       await fileUtils.validateProjectDir(this.projectRoot);
       const metadata = PackUtils.getPackMetadata(packName, this.projectRoot);
@@ -54,9 +64,13 @@ export default class PackCommands {
       logger.info(`Version: ${metadata.version}`);
       logger.info(`Description: ${metadata.description}`);
       logger.info('Templates:');
-      metadata.templates.forEach((template) => logger.info(`- ${template}`));
+      metadata.templates.forEach((template: string) => logger.info(`- ${template}`));
     } catch (error) {
-      logger.error(`Failed to get pack info: ${error.message}`);
+      if (error instanceof Error) {
+        logger.error(`Failed to get pack info: ${error.message}`);
+      } else {
+        logger.error('Failed to get pack info: Unknown error');
+      }
       process.exit(1);
     }
   }
@@ -64,7 +78,11 @@ export default class PackCommands {
   /**
    * Handle pack commands
    */
-  static async handleCommand(action, options, projectRoot) {
+  static async handleCommand(
+    action: string,
+    options: { name?: string },
+    projectRoot: string,
+  ): Promise<void> {
     try {
       const packCommands = new PackCommands(projectRoot);
 
@@ -91,7 +109,11 @@ export default class PackCommands {
           process.exit(1);
       }
     } catch (error) {
-      logger.error(`Pack command failed: ${error.message}`);
+      if (error instanceof Error) {
+        logger.error(`Pack command failed: ${error.message}`);
+      } else {
+        logger.error('Pack command failed: Unknown error');
+      }
       process.exit(1);
     }
   }
