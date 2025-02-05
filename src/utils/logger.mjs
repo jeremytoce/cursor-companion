@@ -1,4 +1,4 @@
-const chalk = require('chalk');
+import chalk from 'chalk';
 
 const logger = {
     info: (message) => {
@@ -21,4 +21,4 @@ const logger = {
     }
 };
 
-module.exports = logger; 
+export default logger; 

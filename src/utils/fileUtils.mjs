@@ -2,10 +2,9 @@
  * File handling utilities for cursor-companion
  * @module fileUtils
  */
-
-const fs = require('fs-extra');
-const path = require('path');
-const logger = require('./logger');
+import fs from 'fs-extra';
+import path from 'path';
+import logger from './logger.mjs';
 
 const fileUtils = {
   /**
@@ -44,4 +43,4 @@ const fileUtils = {
   }
 };
 
-module.exports = fileUtils; 
+export default fileUtils;

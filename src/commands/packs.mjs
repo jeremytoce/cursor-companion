@@ -1,8 +1,8 @@
-const PackUtils = require('../utils/packUtils');
-const fileUtils = require('../utils/fileUtils');
-const logger = require('../utils/logger');
+import PackUtils from '../utils/packUtils.mjs';
+import fileUtils from '../utils/fileUtils.mjs';
+import logger from '../utils/logger.mjs';
 
-class PackCommands {
+export default class PackCommands {
   constructor(projectRoot) {
     this.projectRoot = projectRoot;
   }
@@ -96,5 +96,3 @@ class PackCommands {
     }
   }
 }
-
-module.exports = PackCommands; 

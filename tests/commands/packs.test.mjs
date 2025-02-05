@@ -1,14 +1,12 @@
-const fs = require('fs-extra');
-const path = require('path');
-const PackCommands = require('../../src/commands/packs');
-const PackUtils = require('../../src/utils/packUtils');
-const fileUtils = require('../../src/utils/fileUtils');
-const logger = require('../../src/utils/logger');
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import PackCommands from '../../src/commands/packs.mjs';
+import PackUtils from '../../src/utils/packUtils.mjs';
+import fileUtils from '../../src/utils/fileUtils.mjs';
 
-jest.mock('../../src/utils/fileUtils');
-jest.mock('../../src/utils/packUtils');
-jest.mock('../../src/utils/logger');
-jest.mock('fs-extra');
+vi.mock('../../src/utils/fileUtils.mjs');
+vi.mock('../../src/utils/packUtils.mjs');
+vi.mock('../../src/utils/logger.mjs');
+vi.mock('fs-extra');
 
 describe('PackCommands', () => {
   const projectRoot = '/test/project';
@@ -16,7 +14,7 @@ describe('PackCommands', () => {
 
   beforeEach(() => {
     packCommands = new PackCommands(projectRoot);
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     // Mock the static methods
     PackUtils.listInstalledPacks.mockReturnValue(['pack1', 'pack2']);
     PackUtils.getPackMetadata.mockReturnValue({
@@ -43,7 +41,7 @@ describe('PackCommands', () => {
       fileUtils.validateProjectDir.mockResolvedValue(true);
       PackUtils.installPack.mockRejectedValue(new Error('Install failed'));
 
-      const mockExit = jest.spyOn(process, 'exit').mockImplementation(() => {});
+      const mockExit = vi.spyOn(process, 'exit').mockImplementation(() => {});
       await packCommands.install('test-pack');
 
       expect(mockExit).toHaveBeenCalledWith(1);
@@ -138,7 +136,7 @@ describe('PackCommands', () => {
     });
 
     it('should handle unknown commands', async () => {
-      const mockExit = jest.spyOn(process, 'exit').mockImplementation(() => {});
+      const mockExit = vi.spyOn(process, 'exit').mockImplementation(() => {});
       
       await PackCommands.handleCommand('unknown', {}, projectRoot);
 
@@ -146,7 +144,7 @@ describe('PackCommands', () => {
     });
 
     it('should require pack name for install command', async () => {
-      const mockExit = jest.spyOn(process, 'exit').mockImplementation(() => {});
+      const mockExit = vi.spyOn(process, 'exit').mockImplementation(() => {});
       
       await PackCommands.handleCommand('install', {}, projectRoot);
 
@@ -154,7 +152,7 @@ describe('PackCommands', () => {
     });
 
     it('should require pack name for info command', async () => {
-      const mockExit = jest.spyOn(process, 'exit').mockImplementation(() => {});
+      const mockExit = vi.spyOn(process, 'exit').mockImplementation(() => {});
       
       await PackCommands.handleCommand('info', {}, projectRoot);
 
@@ -165,7 +163,7 @@ describe('PackCommands', () => {
   describe('validation', () => {
     it('should handle project validation errors', async () => {
       fileUtils.validateProjectDir.mockRejectedValue(new Error('Invalid project'));
-      const mockExit = jest.spyOn(process, 'exit').mockImplementation(() => {});
+      const mockExit = vi.spyOn(process, 'exit').mockImplementation(() => {});
 
       await packCommands.list();
 
