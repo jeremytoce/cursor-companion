@@ -13,7 +13,9 @@
   },
   "scripts": {
     "test": "vitest",
-    "test:watch": "vitest watch"
+    "test:watch": "vitest watch",
+    "prepare": "husky",
+    "format": "prettier --write ."
   },
   "keywords": [
     "cursor",
@@ -38,11 +40,24 @@
     "fs-extra": "^10.0.0"
   },
   "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^15.4.3",
+    "prettier": "^3.4.2",
     "vitest": "^3.0.5"
   },
   "files": [
     "bin/",
     "src/",
     "workflow-packs/"
-  ]
+  ],
+  "lint-staged": {
+    "*.{js,mjs}": [
+      "prettier --write"
+    ],
+    "*.{json,md}": "prettier --write"
+  },
+  "prettier": {
+    "singleQuote": true,
+    "trailingComma": "es5"
+  }
 }
