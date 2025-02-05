@@ -1,14 +1,15 @@
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import fs from 'fs-extra';
 import PackUtils from '../../src/utils/packUtils.mjs';
 
-jest.mock('fs-extra');
+vi.mock('fs-extra');
 
 describe('PackUtils', () => {
   const projectRoot = '/test/project';
   const packName = 'test-pack';
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('getPackMetadata', () => {
