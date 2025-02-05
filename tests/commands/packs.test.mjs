@@ -22,7 +22,7 @@ describe('PackCommands', () => {
       version: '1.0.0',
       author: 'Test Author',
       description: 'Test Description',
-      templates: ['template1']
+      templates: ['template1'],
     });
   });
 
@@ -86,7 +86,7 @@ describe('PackCommands', () => {
         version: '1.0.0',
         author: 'Test Author',
         description: 'Test Description',
-        templates: ['template1']
+        templates: ['template1'],
       });
 
       await packCommands.info('test-pack');
@@ -111,7 +111,7 @@ describe('PackCommands', () => {
       fileUtils.validateProjectDir.mockResolvedValue(true);
       PackUtils.listInstalledPacks.mockResolvedValue(['pack1']);
       PackUtils.getPackMetadata.mockImplementation(() => ({
-        version: '1.0.0'
+        version: '1.0.0',
       }));
 
       await PackCommands.handleCommand('list', {}, projectRoot);
@@ -127,7 +127,7 @@ describe('PackCommands', () => {
         version: '1.0.0',
         author: 'Test Author',
         description: 'Test Description',
-        templates: []
+        templates: [],
       });
 
       await PackCommands.handleCommand('info', options, projectRoot);
@@ -137,7 +137,7 @@ describe('PackCommands', () => {
 
     it('should handle unknown commands', async () => {
       const mockExit = vi.spyOn(process, 'exit').mockImplementation(() => {});
-      
+
       await PackCommands.handleCommand('unknown', {}, projectRoot);
 
       expect(mockExit).toHaveBeenCalledWith(1);
@@ -145,7 +145,7 @@ describe('PackCommands', () => {
 
     it('should require pack name for install command', async () => {
       const mockExit = vi.spyOn(process, 'exit').mockImplementation(() => {});
-      
+
       await PackCommands.handleCommand('install', {}, projectRoot);
 
       expect(mockExit).toHaveBeenCalledWith(1);
@@ -153,7 +153,7 @@ describe('PackCommands', () => {
 
     it('should require pack name for info command', async () => {
       const mockExit = vi.spyOn(process, 'exit').mockImplementation(() => {});
-      
+
       await PackCommands.handleCommand('info', {}, projectRoot);
 
       expect(mockExit).toHaveBeenCalledWith(1);
@@ -170,4 +170,4 @@ describe('PackCommands', () => {
       expect(mockExit).toHaveBeenCalledWith(1);
     });
   });
-}); 
+});

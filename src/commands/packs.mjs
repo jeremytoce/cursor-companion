@@ -30,7 +30,7 @@ export default class PackCommands {
       await fileUtils.validateProjectDir(this.projectRoot);
       const packs = PackUtils.listInstalledPacks(this.projectRoot);
       logger.info('Installed packs:');
-      
+
       for (const pack of packs) {
         const metadata = PackUtils.getPackMetadata(pack, this.projectRoot);
         logger.info(`- ${pack} (v${metadata.version})`);
@@ -54,7 +54,7 @@ export default class PackCommands {
       logger.info(`Version: ${metadata.version}`);
       logger.info(`Description: ${metadata.description}`);
       logger.info('Templates:');
-      metadata.templates.forEach(template => logger.info(`- ${template}`));
+      metadata.templates.forEach((template) => logger.info(`- ${template}`));
     } catch (error) {
       logger.error(`Failed to get pack info: ${error.message}`);
       process.exit(1);

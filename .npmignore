@@ -8,3 +8,8 @@ cursor-companion/
 .github
 .gitguardian.yaml
 .pre-commit-config.yaml
+.husky/
+.prettierrc.json
+.prettierrc
+.prettierignore
+.prettierignore

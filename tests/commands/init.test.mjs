@@ -19,8 +19,8 @@ vi.mock('../../src/utils/logger.mjs');
 vi.mock('enquirer', () => {
   return {
     default: {
-      prompt: vi.fn()
-    }
+      prompt: vi.fn(),
+    },
   };
 });
 
@@ -83,4 +83,4 @@ describe('init command', () => {
     expect(logger.error).toHaveBeenCalledWith('Failed to initialize cursor-companion');
     expect(mockExit).toHaveBeenCalledWith(1);
   });
-}); 
+});

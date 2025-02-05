@@ -3,12 +3,5 @@
   "version": "1.0.0",
   "author": "Jeremy Toce",
   "description": "Core workflow templates for cursor-companion",
-  "templates": [
-    "p.init",
-    "p.feature",
-    "p.code",
-    "p.debug",
-    "p.validate",
-    "p.globalrules"
-  ]
-} 
+  "templates": ["p.init", "p.feature", "p.code", "p.debug", "p.validate", "p.globalrules"]
+}

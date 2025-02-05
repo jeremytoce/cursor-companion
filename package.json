@@ -55,9 +55,5 @@
       "prettier --write"
     ],
     "*.{json,md}": "prettier --write"
-  },
-  "prettier": {
-    "singleQuote": true,
-    "trailingComma": "es5"
   }
 }
