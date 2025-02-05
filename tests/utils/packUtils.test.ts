@@ -1,8 +1,22 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import fs from 'fs-extra';
-import PackUtils from '../../src/utils/packUtils.mjs';
+import PackUtils from '@/utils/packUtils';
+import { Stats } from 'fs';
 
-vi.mock('fs-extra');
+// Mock fs-extra with proper typing
+vi.mock('fs-extra', () => ({
+  default: {
+    existsSync: vi.fn(),
+    readFileSync: vi.fn(),
+    readdirSync: vi.fn(),
+    statSync: vi.fn(),
+    ensureDir: vi.fn(),
+    copy: vi.fn(),
+  },
+}));
+
+// Type assertion for the mocked fs module
+const mockedFs = vi.mocked(fs);
 
 describe('PackUtils', () => {
   const projectRoot = '/test/project';
@@ -22,15 +36,15 @@ describe('PackUtils', () => {
         templates: ['template1'],
       };
 
-      fs.existsSync.mockReturnValue(true);
-      fs.readFileSync.mockReturnValue(JSON.stringify(mockMetadata));
+      mockedFs.existsSync.mockReturnValue(true);
+      mockedFs.readFileSync.mockReturnValue(JSON.stringify(mockMetadata));
 
       const result = PackUtils.getPackMetadata(packName, projectRoot);
       expect(result).toEqual(mockMetadata);
     });
 
     it('should throw if pack not found', () => {
-      fs.existsSync.mockReturnValue(false);
+      mockedFs.existsSync.mockReturnValue(false);
 
       expect(() => {
         PackUtils.getPackMetadata(packName, projectRoot);
@@ -40,16 +54,18 @@ describe('PackUtils', () => {
 
   describe('listInstalledPacks', () => {
     it('should return list of installed packs', () => {
-      fs.existsSync.mockReturnValue(true);
-      fs.readdirSync.mockReturnValue(['pack1', 'pack2']);
-      fs.statSync.mockReturnValue({ isDirectory: () => true });
+      mockedFs.existsSync.mockReturnValue(true);
+      mockedFs.readdirSync.mockReturnValue(['pack1', 'pack2'] as unknown as fs.Dirent[]);
+      mockedFs.statSync.mockReturnValue({
+        isDirectory: () => true,
+      } as unknown as Stats);
 
       const result = PackUtils.listInstalledPacks(projectRoot);
       expect(result).toEqual(['pack1', 'pack2']);
     });
 
     it('should return empty array if no packs directory', () => {
-      fs.existsSync.mockReturnValue(false);
+      mockedFs.existsSync.mockReturnValue(false);
 
       const result = PackUtils.listInstalledPacks(projectRoot);
       expect(result).toEqual([]);
@@ -58,17 +74,17 @@ describe('PackUtils', () => {
 
   describe('installPack', () => {
     it('should install pack successfully', async () => {
-      fs.existsSync.mockReturnValue(true);
-      fs.readFileSync.mockReturnValue(JSON.stringify({ version: '1.0.0' }));
+      mockedFs.existsSync.mockReturnValue(true);
+      mockedFs.readFileSync.mockReturnValue(JSON.stringify({ version: '1.0.0' }));
 
       await PackUtils.installPack(packName, projectRoot);
 
-      expect(fs.ensureDir).toHaveBeenCalled();
-      expect(fs.copy).toHaveBeenCalled();
+      expect(mockedFs.ensureDir).toHaveBeenCalled();
+      expect(mockedFs.copy).toHaveBeenCalled();
     });
 
     it('should throw if source pack not found', async () => {
-      fs.existsSync.mockReturnValue(false);
+      mockedFs.existsSync.mockReturnValue(false);
 
       await expect(PackUtils.installPack(packName, projectRoot)).rejects.toThrow(
         `Pack ${packName} not found`,
@@ -76,7 +92,7 @@ describe('PackUtils', () => {
     });
 
     it('should throw if pack.json missing', async () => {
-      fs.existsSync
+      mockedFs.existsSync
         .mockReturnValueOnce(true) // source directory exists
         .mockReturnValueOnce(false); // pack.json doesn't exist
 

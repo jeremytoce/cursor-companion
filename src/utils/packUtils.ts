@@ -1,6 +1,21 @@
 import fs from 'fs-extra';
 import path from 'path';
-import logger from './logger.mjs';
+import logger from '@/utils/logger';
+
+interface PackMetadata {
+  version: string;
+  name: string;
+  author: string;
+  description: string;
+  templates: string[];
+  [key: string]: unknown;
+}
+
+interface InstallResult {
+  pack: string;
+  success: boolean;
+  error?: unknown;
+}
 
 export default class PackUtils {
   static PACKAGE_ROOT = new URL('../../', import.meta.url).pathname;
@@ -10,14 +25,14 @@ export default class PackUtils {
    * Get source pack directory
    * @private
    */
-  static getSourcePath(packName) {
+  static getSourcePath(packName: string): string {
     return path.join(this.PACKAGE_ROOT, 'workflow-packs', packName);
   }
 
   /**
    * Get metadata for a specific pack
    */
-  static getPackMetadata(packName, projectRoot) {
+  static getPackMetadata(packName: string, projectRoot: string): PackMetadata {
     const packPath = path.join(projectRoot, this.PACKS_DIR, packName, 'pack.json');
     if (!fs.existsSync(packPath)) {
       throw new Error(`Pack ${packName} not found`);
@@ -28,7 +43,7 @@ export default class PackUtils {
   /**
    * List all installed packs
    */
-  static listInstalledPacks(projectRoot) {
+  static listInstalledPacks(projectRoot: string): string[] {
     const packsDir = path.join(projectRoot, this.PACKS_DIR);
     if (!fs.existsSync(packsDir)) {
       return [];
@@ -42,7 +57,7 @@ export default class PackUtils {
   /**
    * Install a single pack
    */
-  static async installPack(packName, projectRoot = process.cwd()) {
+  static async installPack(packName: string, projectRoot: string = process.cwd()): Promise<void> {
     const sourcePath = this.getSourcePath(packName);
     const destPath = path.join(projectRoot, this.PACKS_DIR, packName);
 
@@ -59,7 +74,7 @@ export default class PackUtils {
 
     try {
       // Read metadata from source pack
-      const sourceMetadata = JSON.parse(fs.readFileSync(packJsonPath, 'utf8'));
+      const sourceMetadata = JSON.parse(fs.readFileSync(packJsonPath, 'utf8')) as PackMetadata;
       logger.info(`Installing ${packName} v${sourceMetadata.version}...`);
 
       // Create destination directory if it doesn't exist
@@ -69,22 +84,30 @@ export default class PackUtils {
       await fs.copy(sourcePath, destPath);
 
       logger.success(`✓ Installed ${packName}`);
-    } catch (error) {
-      throw new Error(`Failed to install pack: ${error.message}`);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        throw new Error(`Failed to install pack: ${error.message}`);
+      }
+      throw error;
     }
   }
 
   /**
    * Install multiple packs
    */
-  static async installPacks(packNames, projectRoot = process.cwd()) {
-    const results = [];
+  static async installPacks(
+    packNames: string[],
+    projectRoot: string = process.cwd(),
+  ): Promise<InstallResult[]> {
+    const results: InstallResult[] = [];
     for (const pack of packNames) {
       try {
         await this.installPack(pack, projectRoot);
         results.push({ pack, success: true });
-      } catch (error) {
-        logger.error(`Failed to install ${pack}: ${error.message}`);
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          logger.error(`Failed to install ${pack}: ${error.message}`);
+        }
         results.push({ pack, success: false, error });
       }
     }

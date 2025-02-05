@@ -1,14 +1,16 @@
 import fs from 'fs-extra';
 import path from 'path';
 import chalk from 'chalk';
-import logger from '../utils/logger.mjs';
-import PackUtils from '../utils/packUtils.mjs';
-import fileUtils from '../utils/fileUtils.mjs';
-import pkg from 'enquirer';
+import enquirer from 'enquirer';
+import logger from '@/utils/logger';
+import PackUtils from '@/utils/packUtils';
+import fileUtils from '@/utils/fileUtils';
 
-const { prompt } = pkg;
+interface OverwritePrompt {
+  overwrite: boolean;
+}
 
-export default async function init() {
+export default async function init(): Promise<void> {
   const projectRoot = process.cwd();
   const cursorCompanionDir = path.join(projectRoot, 'cursor-companion');
 
@@ -20,7 +22,7 @@ export default async function init() {
 
     // Check if already initialized
     if (await fileUtils.isInitialized(projectRoot)) {
-      const { overwrite } = await prompt({
+      const { overwrite } = await enquirer.prompt<OverwritePrompt>({
         type: 'confirm',
         name: 'overwrite',
         message: 'cursor-companion already exists. Overwrite?',
@@ -56,9 +58,14 @@ export default async function init() {
       'to install additional packs',
     );
     console.log('Use', chalk.yellow('cursor-companion --help'), 'for available commands');
-  } catch (error) {
-    logger.error('Failed to initialize cursor-companion');
-    logger.error(error.message);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      logger.error('Failed to initialize cursor-companion');
+      logger.error(error.message);
+    } else {
+      logger.error('Failed to initialize cursor-companion');
+      logger.error(String(error));
+    }
     process.exit(1);
   }
 }

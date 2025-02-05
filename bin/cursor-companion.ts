@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 import { program } from 'commander';
-import initCommands from '../src/commands/init.mjs';
-import PackCommands from '../src/commands/packs.mjs';
-import { version } from '../src/version.mjs';
+import initCommands from '@/commands/init';
+import PackCommands from '@/commands/packs';
 
-program.version(version).description('Cursor Companion CLI - Template Management Tool');
+const VERSION = '0.1.8';
+
+program.version(VERSION).description('Cursor Companion CLI - Template Management Tool');
 
 program
   .command('init')
