@@ -1,6 +1,6 @@
 {
   "name": "cursor-companion",
-  "version": "0.1.8",
+  "version": "0.2.0",
   "private": false,
   "type": "module",
   "publishConfig": {
@@ -47,8 +47,7 @@
   },
   "files": [
     "bin/",
-    "src/",
-    "workflow-packs/"
+    "src/"
   ],
   "lint-staged": {
     "*.{js,mjs}": [

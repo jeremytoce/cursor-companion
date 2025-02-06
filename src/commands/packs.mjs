@@ -1,6 +1,9 @@
-import PackUtils from '../utils/packUtils.mjs';
-import fileUtils from '../utils/fileUtils.mjs';
+import fs from 'fs-extra';
+import path from 'path';
 import logger from '../utils/logger.mjs';
+import chalk from 'chalk';
+import fileUtils from '../utils/fileUtils.mjs';
+import PackUtils from '../utils/packUtils.mjs';
 
 export default class PackCommands {
   constructor(projectRoot) {
@@ -79,6 +82,9 @@ export default class PackCommands {
         case 'list':
           await packCommands.list();
           break;
+        case 'available':
+          await packCommands.listAvailable();
+          break;
         case 'info':
           if (!options.name) {
             logger.error('Error: Pack name is required');
@@ -92,6 +98,29 @@ export default class PackCommands {
       }
     } catch (error) {
       logger.error(`Pack command failed: ${error.message}`);
+      process.exit(1);
+    }
+  }
+
+  /**
+   * List available packs from registry
+   */
+  async listAvailable() {
+    try {
+      await fileUtils.validateProjectDir(this.projectRoot);
+      const installedPacks = PackUtils.listInstalledPacks(this.projectRoot);
+      const { workflows } = await PackUtils.listAvailablePacks(this.projectRoot);
+
+      logger.info('Available workflows:');
+      for (const pack of workflows) {
+        const status = installedPacks.includes(pack.name) ? chalk.green('(installed)') : '';
+        logger.info(`- ${chalk.cyan(pack.name)} ${status}`);
+        logger.info(`   version: ${pack.version}`);
+        logger.info(`   description: ${pack.description}`);
+        logger.info(''); // Add blank line between workflows
+      }
+    } catch (error) {
+      logger.error(`Failed to list available workflows: ${error.message}`);
       process.exit(1);
     }
   }

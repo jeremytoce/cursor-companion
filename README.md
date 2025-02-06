@@ -36,6 +36,12 @@ List installed packs:
 cursor-companion packs list
 ```
 
+List available workflows:
+
+```bash
+cursor-companion packs available
+```
+
 Install a specified pack:
 
 ```bash
@@ -61,15 +67,18 @@ For detailed information about available workflows in each pack, see the README.
 When initialized, cursor-companion creates the following structure:
 
 ```text
-cursor-companion/
-└── workflow-packs/
-    └── base/         # Core workflows (installed by default)
+.cursor/
+├── rules/           # Rules downloaded from cursor-companion-library
+└── workflows/       # Workflow packs downloaded from cursor-companion-library
+    └── base/        # Core workflows (installed by default)
     └── [other-packs] # Additional installed packs
 ```
 
 ## Workflow Packs
 
 Cursor Companion uses a pack-based system to organize workflows. Each pack contains a set of specialized templates for different development scenarios. Each pack has its own README.md with detailed documentation in its directory under `workflow-packs/`.
+
+Workflow packs are downloaded from the [cursor-companion-library](https://github.com/jeremytoce/cursor-companion-library) repository.
 
 ### Available Packs
 
@@ -92,3 +101,37 @@ _This is not perfect._ I am still experimenting with the workflow lifecycle and 
 ## License
 
 MIT
+
+# Cursor Companion Library
+
+Official library of rules and workflows for cursor-companion.
+
+## Structure
+
+### Rules
+
+Collection of rules for Cursor AI. [Browse rules](rules/README.md)
+
+### Workflows
+
+Collection of workflow packs for different development scenarios. [Browse workflows](workflows/README.md)
+
+## Usage
+
+Install workflow packs using cursor-companion:
+
+```bash
+# Install base pack
+cursor-companion packs install -n base
+
+# Install additional packs
+cursor-companion packs install -n code-coverage
+cursor-companion packs install -n security-audit
+```
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch
+3. Add or modify rules/workflows following the directory structure
+4. Submit a pull request
