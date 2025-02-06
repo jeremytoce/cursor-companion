@@ -1,5 +1,5 @@
 /**
- * File handling utilities for cursor-companion
+ * File handling utilities for cco
  * @module fileUtils
  */
 import fs from 'fs-extra';

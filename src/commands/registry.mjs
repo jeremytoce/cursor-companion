@@ -2,59 +2,184 @@ import fs from 'fs-extra';
 import path from 'path';
 import logger from '../utils/logger.mjs';
 import fileUtils from '../utils/fileUtils.mjs';
+import RuleUtils from '../utils/ruleUtils.mjs';
 
+/**
+ * Command handler for registry operations
+ * Handles CLI interactions for registry management
+ */
 export default class RegistryCommands {
-  static CONFIG_FILE = '.cursor/config.json';
+  /** Command validation messages */
+  static Messages = {
+    usage: {
+      set: 'Usage: cco registry set -u <url>',
+      get: 'Usage: cco registry get',
+    },
+    actions: ['get', 'set'],
+    invalidAction: (action) =>
+      `Unknown action: ${action}. Valid actions are: ${RegistryCommands.Messages.actions.join(', ')}`,
+  };
+
+  /** File system paths */
+  static Paths = {
+    config: '.cursor/config.json',
+  };
+
+  constructor(projectRoot) {
+    this.projectRoot = projectRoot;
+  }
 
   /**
-   * Handle registry commands
-   * @param {string} action - Action to perform (get/set)
-   * @param {object} options - Command options
-   * @param {string} projectRoot - Project root directory
+   * Validate project directory before operations
+   * @private
    */
-  static async handleCommand(action, options, projectRoot) {
+  async validateProject() {
+    await fileUtils.validateProjectDir(this.projectRoot);
+  }
+
+  /**
+   * Get current registry URL
+   */
+  async get() {
     try {
-      switch (action) {
-        case 'get':
-          await this.getRegistry(projectRoot);
-          break;
-        case 'set':
-          if (!options.url) {
-            logger.error('Error: Registry URL is required');
-            process.exit(1);
-          }
-          await this.setRegistry(options.url, projectRoot);
-          break;
-        default:
-          logger.error(`Unknown action: ${action}`);
-          process.exit(1);
+      await this.validateProject();
+      const configPath = path.join(this.projectRoot, RegistryCommands.Paths.config);
+
+      if (!(await fs.pathExists(configPath))) {
+        logger.info('No custom registry set (using default)');
+        return;
+      }
+
+      const config = await fs.readJson(configPath);
+      if (config.registry) {
+        logger.info(`Current registry: ${config.registry}`);
+      } else {
+        logger.info('No custom registry set (using default)');
       }
     } catch (error) {
-      logger.error(`Failed to ${action} registry: ${error.message}`);
+      logger.error(`Failed to get registry: ${error.message}`);
       process.exit(1);
     }
   }
 
   /**
-   * Get current registry URL
-   * @param {string} projectRoot - Project root directory
+   * Set registry URL
    */
-  static async getRegistry(projectRoot) {
-    const config = await this.loadConfig(projectRoot);
-    logger.info(`Current registry: ${config.registry || 'default'}`);
+  async set(url) {
+    try {
+      await this.validateProject();
+      const configPath = path.join(this.projectRoot, RegistryCommands.Paths.config);
+
+      // Ensure config directory exists
+      await fs.ensureDir(path.dirname(configPath));
+
+      // Load or create config
+      let config = {};
+      if (await fs.pathExists(configPath)) {
+        config = await fs.readJson(configPath);
+      }
+
+      // Update registry URL
+      config.registry = url;
+      await fs.writeJson(configPath, config, { spaces: 2 });
+      logger.success(`Registry URL set to: ${url}`);
+    } catch (error) {
+      logger.error(`Failed to set registry: ${error.message}`);
+      process.exit(1);
+    }
   }
 
   /**
-   * Set registry URL
-   * @param {string} url - New registry URL
-   * @param {string} projectRoot - Project root directory
+   * Handle registry commands
    */
-  static async setRegistry(url, projectRoot) {
-    await fileUtils.validateProjectDir(projectRoot);
+  static async handleCommand(action, options, projectRoot) {
+    try {
+      // Validate action
+      if (!this.Messages.actions.includes(action)) {
+        logger.error(this.Messages.invalidAction(action));
+        process.exit(1);
+      }
+
+      const registryCommands = new RegistryCommands(projectRoot);
+
+      // Validate URL for set action
+      if (action === 'set' && !options.url) {
+        logger.error(this.Messages.usage.set);
+        process.exit(1);
+      }
+
+      // Execute command
+      switch (action) {
+        case 'get':
+          await registryCommands.get();
+          break;
+        case 'set':
+          await registryCommands.set(options.url);
+          break;
+      }
+    } catch (error) {
+      logger.error(`Registry command failed: ${error.message}`);
+      process.exit(1);
+    }
+  }
+
+  /**
+   * Get available packs from registry
+   * @param {string} projectRoot - Project root directory
+   * @returns {Promise<Object>} Available packs from registry
+   */
+  static async getAvailablePrompts(projectRoot) {
     const config = await this.loadConfig(projectRoot);
-    config.registry = url;
-    await this.saveConfig(config, projectRoot);
-    logger.success(`Registry updated to: ${url}`);
+    return PromptUtils.listAvailablePrompts(projectRoot, config.registry);
+  }
+
+  /**
+   * Get available rules from registry
+   * @param {string} projectRoot - Project root directory
+   * @returns {Promise<Object>} Available rules from registry
+   */
+  static async getAvailableRules(projectRoot) {
+    const config = await this.loadConfig(projectRoot);
+    return RuleUtils.listAvailableRules(projectRoot, config.registry);
+  }
+
+  /**
+   * Fetch rule data from registry
+   * @param {string} ruleName - Name of the rule to fetch
+   * @param {string} projectRoot - Project root directory
+   * @returns {Promise<Object>} Rule data
+   */
+  static async fetchRule(ruleName, projectRoot) {
+    const config = await this.loadConfig(projectRoot);
+    const registryUrl = config.registry || this.DEFAULT_REGISTRY;
+
+    try {
+      const url = `${registryUrl}/${ruleName}/pack.json`;
+      logger.info('Fetching rule:');
+      logger.info(`- Rule name: ${ruleName}`);
+      logger.info(`- Full URL: ${url}`);
+
+      const response = await fetch(url);
+      logger.info('Response received:');
+      logger.info(`- Status: ${response.status}`);
+      logger.info(`- Status Text: ${response.statusText}`);
+
+      if (!response.ok) {
+        throw new Error(`Registry request failed (${response.status}): ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      logger.info('Rule data received:');
+      logger.info(JSON.stringify(data, null, 2));
+
+      return data;
+    } catch (error) {
+      logger.error('Error details:');
+      logger.error(`- Error name: ${error.name}`);
+      logger.error(`- Error message: ${error.message}`);
+      logger.error(`- Stack trace: ${error.stack}`);
+      throw new Error(`Failed to fetch rule ${ruleName} from registry: ${error.message}`);
+    }
   }
 
   static async loadConfig(projectRoot) {

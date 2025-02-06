@@ -1,15 +1,15 @@
 {
-  "name": "cursor-companion",
+  "name": "cco",
   "version": "0.2.0",
   "private": false,
   "type": "module",
   "publishConfig": {
     "access": "public"
   },
-  "description": "A CLI tool for managing cursor workflows",
-  "main": "bin/cursor-companion.mjs",
+  "description": "CLI tool for managing Cursor AI prompts and rules",
+  "main": "bin/cco.mjs",
   "bin": {
-    "cursor-companion": "./bin/cursor-companion.mjs"
+    "cco": "./bin/cco.mjs"
   },
   "scripts": {
     "test": "vitest",
@@ -19,7 +19,7 @@
   },
   "keywords": [
     "cursor",
-    "workflow",
+    "prompts",
     "cli",
     "automation"
   ],

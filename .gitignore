@@ -2,6 +2,7 @@
 cursor-companion/
 deploy-steps.txt
 package-lock.json
+.cursor/
 
 # Dependencies
 node_modules/
