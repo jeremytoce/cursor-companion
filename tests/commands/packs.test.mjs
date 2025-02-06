@@ -170,4 +170,39 @@ describe('PackCommands', () => {
       expect(mockExit).toHaveBeenCalledWith(1);
     });
   });
+
+  describe('listAvailable', () => {
+    beforeEach(() => {
+      fileUtils.validateProjectDir.mockResolvedValue(true);
+      PackUtils.listInstalledPacks.mockReturnValue(['base']);
+      PackUtils.listAvailablePacks.mockResolvedValue({
+        workflows: [
+          {
+            name: 'base',
+            version: '1.0.0',
+            description: 'Core workflow templates',
+          },
+          {
+            name: 'code-coverage',
+            version: '1.0.0',
+            description: 'Code coverage tools',
+          },
+        ],
+      });
+    });
+
+    it('should list available workflows with installation status', async () => {
+      await packCommands.listAvailable();
+      expect(fileUtils.validateProjectDir).toHaveBeenCalled();
+      expect(PackUtils.listAvailablePacks).toHaveBeenCalled();
+      expect(PackUtils.listInstalledPacks).toHaveBeenCalled();
+    });
+
+    it('should handle errors', async () => {
+      PackUtils.listAvailablePacks.mockRejectedValue(new Error('Failed to fetch'));
+      const mockExit = vi.spyOn(process, 'exit').mockImplementation(() => {});
+      await packCommands.listAvailable();
+      expect(mockExit).toHaveBeenCalledWith(1);
+    });
+  });
 });

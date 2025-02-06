@@ -1,22 +1,39 @@
 #!/usr/bin/env node
-import { program } from 'commander';
-import initCommands from '../src/commands/init.mjs';
+
+import { Command } from 'commander';
+import init from '../src/commands/init.mjs';
 import PackCommands from '../src/commands/packs.mjs';
+import RegistryCommands from '../src/commands/registry.mjs';
 import { version } from '../src/version.mjs';
 
-program.version(version).description('Cursor Companion CLI - Template Management Tool');
+const program = new Command();
+
+program
+  .name('cursor-companion')
+  .description('CLI tool for managing Cursor AI workflows')
+  .version(version);
 
 program
   .command('init')
-  .description('Initialize cursor-companion configuration')
-  .action(initCommands);
+  .description('Initialize cursor-companion in the current directory')
+  .action(init);
 
 program
-  .command('packs <action>')
+  .command('packs')
   .description('Manage workflow packs')
-  .option('-n, --name <name>', 'Pack name for install/info commands')
-  .action((action, options) => {
-    PackCommands.handleCommand(action, options, process.cwd());
+  .argument('<action>', 'Action to perform (install/list/available/info)')
+  .option('-n, --name <name>', 'Pack name')
+  .action(async (action, options) => {
+    await PackCommands.handleCommand(action, options, process.cwd());
   });
 
-program.parse(process.argv);
+program
+  .command('registry')
+  .description('Manage workflow pack registry')
+  .argument('<action>', 'Action to perform (get/set)')
+  .option('-u, --url <url>', 'Registry URL (required for set)')
+  .action(async (action, options) => {
+    await RegistryCommands.handleCommand(action, options, process.cwd());
+  });
+
+program.parse();

@@ -3,15 +3,36 @@ import path from 'path';
 import logger from './logger.mjs';
 
 export default class PackUtils {
-  static PACKAGE_ROOT = new URL('../../', import.meta.url).pathname;
   static PACKS_DIR = '.cursor/workflows';
+  static DEFAULT_REGISTRY =
+    'https://raw.githubusercontent.com/jeremytoce/cursor-companion-library/main';
+  static GITHUB_API = 'https://api.github.com/repos/jeremytoce/cursor-companion-library/contents';
 
   /**
-   * Get source pack directory
+   * Get source pack URL
    * @private
    */
-  static getSourcePath(packName) {
-    return path.join(this.PACKAGE_ROOT, 'workflow-packs', packName);
+  static async getSourcePath(packName) {
+    try {
+      const config = await this.loadConfig(process.cwd());
+      const registry = config.registry || this.DEFAULT_REGISTRY;
+      return packName ? `${registry}/workflows/${packName}` : registry;
+    } catch (error) {
+      return packName ? `${this.DEFAULT_REGISTRY}/workflows/${packName}` : this.DEFAULT_REGISTRY;
+    }
+  }
+
+  /**
+   * Load config file
+   * @private
+   */
+  static async loadConfig(projectRoot) {
+    const configPath = path.join(projectRoot, '.cursor/config.json');
+    try {
+      return await fs.readJson(configPath);
+    } catch (error) {
+      return {};
+    }
   }
 
   /**
@@ -43,30 +64,53 @@ export default class PackUtils {
    * Install a single pack
    */
   static async installPack(packName, projectRoot = process.cwd()) {
-    const sourcePath = this.getSourcePath(packName);
+    const sourceUrl = await this.getSourcePath(packName);
     const destPath = path.join(projectRoot, this.PACKS_DIR, packName);
 
-    // Validate source pack exists
-    if (!fs.existsSync(sourcePath)) {
-      throw new Error(`Pack ${packName} not found in workflow-packs`);
-    }
-
-    // Validate pack.json exists
-    const packJsonPath = path.join(sourcePath, 'pack.json');
-    if (!fs.existsSync(packJsonPath)) {
-      throw new Error(`Invalid pack: missing pack.json in ${packName}`);
-    }
-
     try {
-      // Read metadata from source pack
-      const sourceMetadata = JSON.parse(fs.readFileSync(packJsonPath, 'utf8'));
-      logger.info(`Installing ${packName} v${sourceMetadata.version}...`);
+      // Fetch and validate pack.json first
+      const packJsonUrl = `${sourceUrl}/pack.json`;
+      const response = await fetch(packJsonUrl);
 
-      // Create destination directory if it doesn't exist
-      await fs.ensureDir(path.dirname(destPath));
+      if (!response.ok) {
+        throw new Error(`Pack ${packName} not found in registry`);
+      }
 
-      // Copy pack files
-      await fs.copy(sourcePath, destPath);
+      const metadata = await response.json();
+      logger.info(`Installing ${packName} v${metadata.version}...`);
+
+      // Create destination directory
+      await fs.ensureDir(destPath);
+
+      // Download and write pack.json
+      await fs.writeFile(path.join(destPath, 'pack.json'), JSON.stringify(metadata, null, 2));
+
+      // Download each template file
+      if (metadata.templates && Array.isArray(metadata.templates)) {
+        for (const template of metadata.templates) {
+          const templateUrl = `${sourceUrl}/${template}`;
+          const templateResponse = await fetch(templateUrl);
+
+          if (!templateResponse.ok) {
+            throw new Error(`Failed to download template ${template}`);
+          }
+
+          const content = await templateResponse.text();
+          await fs.writeFile(path.join(destPath, template), content);
+        }
+      }
+
+      // Download README if exists
+      try {
+        const readmeResponse = await fetch(`${sourceUrl}/README.md`);
+        if (readmeResponse.ok) {
+          const readme = await readmeResponse.text();
+          await fs.writeFile(path.join(destPath, 'README.md'), readme);
+        }
+      } catch (error) {
+        // Ignore README download failures
+        logger.debug(`No README found for ${packName}`);
+      }
 
       logger.success(`✓ Installed ${packName}`);
     } catch (error) {
@@ -89,5 +133,45 @@ export default class PackUtils {
       }
     }
     return results;
+  }
+
+  /**
+   * List all available packs from registry
+   * @param {string} projectRoot - Project root directory
+   * @returns {Promise<Array>} List of available packs with metadata
+   */
+  static async listAvailablePacks(projectRoot = process.cwd()) {
+    try {
+      const registry = await this.getSourcePath('');
+
+      // Get workflows directory contents from GitHub API
+      const apiResponse = await fetch(`${this.GITHUB_API}/workflows`);
+      if (!apiResponse.ok) {
+        throw new Error('Failed to fetch workflows directory');
+      }
+
+      const contents = await apiResponse.json();
+      const workflowNames = contents.filter((item) => item.type === 'dir').map((item) => item.name);
+
+      const workflows = [];
+
+      for (const name of workflowNames) {
+        try {
+          const packJsonUrl = `${registry}/workflows/${name}/pack.json`;
+          const response = await fetch(packJsonUrl);
+          if (response.ok) {
+            const metadata = await response.json();
+            workflows.push(metadata);
+          }
+        } catch (error) {
+          // Skip workflows that aren't available
+          continue;
+        }
+      }
+
+      return { workflows };
+    } catch (error) {
+      return { workflows: [] };
+    }
   }
 }

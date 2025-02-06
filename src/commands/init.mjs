@@ -42,8 +42,15 @@ export default async function init() {
 
     // Install base pack
     logger.info('Installing base pack...');
-    await PackUtils.installPack('base', projectRoot);
-    logger.success('Base pack installed successfully');
+    try {
+      await PackUtils.installPack('base', projectRoot);
+      logger.success('Base pack installed successfully');
+    } catch (error) {
+      logger.warning(
+        'Failed to install base pack. You can install it later with: cursor-companion packs install -n base',
+      );
+      logger.debug(error.message);
+    }
 
     logger.success('\nInitialization complete!');
     logger.info('\nDirectory structure created:');
@@ -56,6 +63,9 @@ export default async function init() {
     logger.info(`Use ${chalk.yellow('cursor-companion packs list')} to see installed packs`);
     logger.info(
       `Use ${chalk.yellow('cursor-companion packs install -n <pack-name>')} to install additional packs`,
+    );
+    logger.info(
+      `Use ${chalk.yellow('cursor-companion registry set -u <url>')} to change the pack registry`,
     );
     logger.info(`Use ${chalk.yellow('cursor-companion --help')} for available commands`);
 
