@@ -4,7 +4,7 @@ import logger from './logger.mjs';
 
 export default class PackUtils {
   static PACKAGE_ROOT = new URL('../../', import.meta.url).pathname;
-  static PACKS_DIR = 'cursor-companion/workflow-packs';
+  static PACKS_DIR = '.cursor/workflows';
 
   /**
    * Get source pack directory
@@ -48,7 +48,7 @@ export default class PackUtils {
 
     // Validate source pack exists
     if (!fs.existsSync(sourcePath)) {
-      throw new Error(`Pack ${packName} not found in ${sourcePath}`);
+      throw new Error(`Pack ${packName} not found in workflow-packs`);
     }
 
     // Validate pack.json exists

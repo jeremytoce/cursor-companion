@@ -10,9 +10,10 @@ const { prompt } = pkg;
 
 export default async function init() {
   const projectRoot = process.cwd();
-  const cursorCompanionDir = path.join(projectRoot, 'cursor-companion');
+  const rulesDir = path.join(projectRoot, '.cursor/rules');
+  const workflowsDir = path.join(projectRoot, '.cursor/workflows');
 
-  logger.info('Initializing cursor-companion...');
+  logger.info('Initializing .cursor directory...');
 
   try {
     // Validate project directory
@@ -23,7 +24,7 @@ export default async function init() {
       const { overwrite } = await prompt({
         type: 'confirm',
         name: 'overwrite',
-        message: 'cursor-companion already exists. Overwrite?',
+        message: '.cursor directory already exists. Overwrite?',
         initial: false,
       });
 
@@ -31,12 +32,13 @@ export default async function init() {
         logger.info('Installation cancelled');
         return;
       }
-      await fs.remove(cursorCompanionDir);
-      logger.info('Removed existing cursor-companion directory');
+      await fs.remove(path.join(projectRoot, '.cursor'));
+      logger.info('Removed existing .cursor directory');
     }
 
     // Create directory structure
-    await fs.ensureDir(path.join(cursorCompanionDir, 'workflow-packs'));
+    await fs.ensureDir(rulesDir);
+    await fs.ensureDir(workflowsDir);
 
     // Install base pack
     logger.info('Installing base pack...');
@@ -44,20 +46,24 @@ export default async function init() {
     logger.success('Base pack installed successfully');
 
     logger.success('\nInitialization complete!');
-    console.log('\nDirectory structure created:');
-    console.log(chalk.blue('cursor-companion/'));
-    console.log(chalk.blue('└── workflow-packs/'));
-    console.log(chalk.blue('    └── base/'));
+    logger.info('\nDirectory structure created:');
+    logger.info(chalk.blue('.cursor/'));
+    logger.info(chalk.blue('├── rules/'));
+    logger.info(chalk.blue('└── workflows/'));
+    logger.info(chalk.blue('    └── base/'));
 
-    console.log('Use', chalk.yellow('cursor-companion packs list'), 'to see installed packs');
-    console.log(
-      'Use',
-      chalk.yellow('cursor-companion packs install -n <pack-name>'),
-      'to install additional packs',
+    logger.info('\nAvailable commands:');
+    logger.info(`Use ${chalk.yellow('cursor-companion packs list')} to see installed packs`);
+    logger.info(
+      `Use ${chalk.yellow('cursor-companion packs install -n <pack-name>')} to install additional packs`,
     );
-    console.log('Use', chalk.yellow('cursor-companion --help'), 'for available commands');
+    logger.info(`Use ${chalk.yellow('cursor-companion --help')} for available commands`);
+
+    logger.info(
+      '\nReminder: Add .cursor/ to your .gitignore file to avoid committing workflow files',
+    );
   } catch (error) {
-    logger.error('Failed to initialize cursor-companion');
+    logger.error('Failed to initialize .cursor directory');
     logger.error(error.message);
     process.exit(1);
   }

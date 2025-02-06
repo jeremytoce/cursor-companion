@@ -8,14 +8,14 @@ import logger from './logger.mjs';
 
 const fileUtils = {
   /**
-   * Checks if cursor-companion is already initialized in the project
+   * Checks if .cursor is already initialized in the project
    * @param {string} projectPath - Path to the project directory
    * @returns {Promise<boolean>} True if initialized
    * @throws {Error} If check fails
    */
   isInitialized: async (projectPath) => {
     try {
-      return await fs.pathExists(path.join(projectPath, 'cursor-companion'));
+      return await fs.pathExists(path.join(projectPath, '.cursor'));
     } catch (error) {
       logger.error(`Failed to check initialization: ${error.message}`);
       throw error;
